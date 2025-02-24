@@ -1,10 +1,20 @@
 # FMM Extensions
 
 
-This repository contains source code for implementing the multichannel multicomponent FMM model (3DFMM), including functions for model fitting, visualization, and parameter inference. A usage example is provided (see `3DFMMUse.R` file) to assist users. The code is developed in the programming language R.
+This repository contains source code for implementing the multichannel multicomponent FMM model (3DFMM), including functions for model fitting, visualization, and parameter inference. The code is developed in the programming language R and a usage example is provided  in the `3DFMMUse.R` file. 
 
 ## Overview
+The FMM (Frequency Modulated Möbius) model is a nonlinear parametric regression model designed to analyze nearly periodic, non-sinusoidal physiological time series, extracting key features encoded in time-varying oscillatory morphology. This method decomposes signals into harmonic functions, known as Möbius waves, which are characterized by four physiologically interpretable parameters: amplitude (
+A
+), location (
+α
+), width/sharpness (
+ω
+), and direction/symmetry (
+β
+).
 
+The FMM approach has demonstrated its effectiveness across various fields, including cardiology, neuroscience, and circadian biology, among many others. Readers may refer to [1-3] for further details.
 ## How to use
 
 ### `fitMultiFMM` function description.
