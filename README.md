@@ -4,9 +4,9 @@
 This repository contains source code for implementing the multichannel multicomponent FMM model (3DFMM), including functions for model fitting, visualization, and parameter inference. The code is developed in the programming language R and a usage example is provided  in the `3DFMMUse.R` file. 
 
 ## Overview
-The 3DFMM model is suitable for scenarios where $k$ sequential events are observed from $d$ different directions (or channels). The 3DFMM is described by a closed curve in 3D space, combining FMM waves (or components) lying in different planes, which are observed as projections on multiple directions. An FMM wave is a scaled Möbius wave characterized by four parameters: $A$ (amplitude), $\alpha$ (location), $\beta$ (asymmetry/peak direction), and $\omega$ (sharpness). These four parameters are wave-specific, but while $A$ and $\beta$ are also channel-specific, $\alpha$ and $\omega$ remain consistent across channels. $\alpha$ and $\omega$ parameters are crucial in modeling, as they establish connectivity between signals from different channels, significantly simplifying the model. Following more intuitive geometric interpretation and ease of theoretical developments, the alternative FMM wave parametrization $\delta = A\cos(\beta), \quad \gamma = -A\sin(\beta)$ is often used. For more in-depth details on 3DFMM, including model formulation and estiamtion algorithm, please refer to the original paper [1].  
+The 3DFMM model is suitable for scenarios where $k$ sequential events are observed from $d$ different directions (or channels). The 3DFMM is described by a closed curve in 3D space, combining FMM waves (or components) lying in different planes, which are observed as projections on multiple directions. An FMM wave is a scaled Möbius wave characterized by four parameters: amplitude ($A$), location ($\alpha$), width/sharpness (\$omega), and symmetry/peak direction ($\beta$). These four parameters are wave-specific, but while $A$ and $\beta$ are also channel-specific, $\alpha$ and $\omega$ remain consistent across channels establishing connectivity among signals from different channels which significantly simplifies the model. The alternative FMM wave parametrization $\delta = A\cos(\beta), \quad \gamma = -A\sin(\beta)$ is often used for a more intuitive geometric interpretation and ease of theoretical developments. For more in-depth details on 3DFMM, including model formulation, estimation algorithm, and inferential procedure, please refer to the original paper [1].  
 
-The 3DFMM approach provides significant advantages in parameter estimation and interpretation, ensuring channel synchronization, efficient model fitting, and enhanced clinical applicability providing a comprehensive view of complex biological systems, particularly in electrocardiogram (ECG) analysis. Standard ECG signals consist of 12 different leads (channels), each representing the electrical activity of the heart from a different perspective [2].  The 3DFMM provides a robust framework for decomposing and analyzing this multichannel (d=12) multicomponent (k=5) signal ensuring the correspondence of the five components to the main ECG waves: P, Q, R, S, and T for typical ECG heartbeats. However, the utility of 3DFMM extends beyond ECG analysis. It can be applied to a wide range of multivariate signals, including electroencephalograms or electroretinograms, among many others [3,4].  
+The 3DFMM approach has demonstrated its efficiency in real-world scenarios, particularly in the field of bioelectrical signals as is the case of the electrocardiogram (ECG). Standard ECG signals consist of 12 different leads (channels), each representing the electrical activity of the heart from a different perspective [2].  The 3DFMM provides a robust framework for decomposing and analyzing this multichannel (d=12) multicomponent (k=5) signal ensuring the correspondence of the five components to the main ECG waves: P, Q, R, S, and T for typical ECG heartbeats. However, the utility of 3DFMM extends beyond ECG analysis. It can be applied to a wide range of multivariate signals, including electroencephalograms or electroretinograms, among many others [3,4].  
 
 ## How to use
 
@@ -20,14 +20,27 @@ The following functions outline the fundamental steps for implementing the 3DFMM
 
 * `vDataMatrix`: double matrix. Each column corresponds to a channel.
 * `nBack`: number of FMM components to be fitted.
-* `maxIter`: maximum number of iterations for the backfitting algorithm used for model estimation.
+* `maxIter`: maximum number of iterations for the backfitting estimation algorithm.
 
 If `vDataMatrix` columns are named, the names will be used to label the directions in the resulting plot. 
 
 #### Return values
-An `R` list. Each element of the list is a  $k\times 4$ matrix which contains the estimated values of the FMM parameters in a specific channel.
+An `R` list with a length equal to the number of channels. Each element of the list is a  $k\times 5$ matrix, containing the estimated FMM parameters, including intercept $M$.
 
-Plot of the signal prediction and the fitted waves in the example data (`exampleData.csv`):
+### `plotMultiFMM` function description.
+
+`plotMultiFMM` generates customized plots for 3DFMM fitting and wave decomposition.
+
+#### Arguments
+
+* `vDataMatrix`: double matrix. Each column corresponds to a channel.
+* `paramsPerSignal`: the output object from `fitMultiFMM`.
+* `channels`: channel selection from columns in vDataMatrix to be shown.
+* `components`: logical. If FALSE, the 3DFMM model fitting is displayed; if FALSE, the wave decomposition is performed.
+
+#### Return
+Plots of the signal predictions and the fitted waves.
+Next figures illustrate 8-channel ECG predicted signal and wave decomposition for the example data `exampleData.csv`.
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/117477025/215553083-31e7b77b-7d87-479f-a305-4445fadae784.jpg" width="900" height="700" alt>
@@ -38,16 +51,15 @@ Plot of the signal prediction and the fitted waves in the example data (`example
 Confidence intervals based on the asymptotic parameter covariance matrix proposed in [1].
 
 #### Arguments
+* `vDataMatrix`: double matrix. Each column corresponds to a channel.
 * `paramsPerSignal`: output of `fitMultiFMM` function.
-* `vDataMatrix`: data matrix fitted. Used for the estimate of sigma.
 * `confidenceLevel`: confidence level for the parameter intervals. By default, it is set to 0.95.
 
-If `vDataMatrix` columns are named, and the confidence intervals for the parameters
 
 #### Return values
-Confidence intervals for each parameter. The FMM parameters **delta** and **gamma** are named as **parameter_component_direction**. Parameters **alpha** and **omega** are common along directions and they are named **parameter_component**.
+A matrix containing confidence intervals and point estimates for the parameters $\delta$, $\gamma$, $\alpha$, and $\omega$. Note that there are $k \times d$ intervals for $\delta$ and $\gamma$, whereas for $\alpha$ and $\omega$, there are $k$ intervals.
 
-Confidence interval (95%) for $\alpha$ and $\omega$ parameters (data: `exampleData.csv`):
+Next, we present (95%) confidence intervals  for the example dataset `exampleData.csv`. Due to space limitations, only the intervals for $\alpha$ and $\omega$ parameters are displayed:
 
 |             | alpha_1 | alpha_2 | alpha_3 | alpha_4 | alpha_5 |
 |-------------|:-------:|:-------:|:-------:|:-------:|:-------:|
