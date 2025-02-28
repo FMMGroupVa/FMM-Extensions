@@ -1,7 +1,7 @@
 # FMM Extensions
 
 
-This repository contains source code for implementing the multichannel multicomponent FMM model (3DFMM), including functions for model fitting, visualization, and parameter inference. The code is developed in the programming language R and a usage example is provided  in the `3DFMMUse.R` file. 
+This repository contains source code for implementing the multichannel multicomponent FMM model (3DFMM), including functions for model fitting, visualization, and parameter inference. The code is developed in the programming language R and a usage example is provided  in the `3DFMMUse.R` file.
 
 ## Overview
 The 3DFMM model is suitable for scenarios where $k$ sequential events are observed from $d$ different directions (or channels). The 3DFMM is described by a closed curve in 3D space, combining FMM waves (or components) lying in different planes, which are observed as projections on multiple directions. An FMM wave is a scaled Möbius wave characterized by four parameters: amplitude ($A$), location ($\alpha$), width/sharpness ($\omega$), and symmetry/peak direction ($\beta$). These four parameters are wave-specific, but while $A$ and $\beta$ are also channel-specific, $\alpha$ and $\omega$ remain consistent across channels establishing connectivity among signals from different channels which significantly simplifies the model. The alternative FMM wave parametrization $\delta = A\cos(\beta), \quad \gamma = -A\sin(\beta)$ is often used for a more intuitive geometric interpretation and ease of theoretical developments. For more in-depth details on 3DFMM, including model formulation, estimation algorithm, and inferential procedure, please refer to the original paper [1].  
