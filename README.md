@@ -63,16 +63,16 @@ Next, we present (95%) confidence intervals  for the example dataset `exampleDat
 
 |             | alpha_1 | alpha_2 | alpha_3 | alpha_4 | alpha_5 |
 |-------------|:-------:|:-------:|:-------:|:-------:|:-------:|
-| Lower (95%) | 5,7472  | 1,2705  | 5,8753  | 5,5872  | 4,3885  |
-| Estimate    | 5,7518  | 1,2918  | 5,8822  | 5,5983  | 4,4431  |
-| Upper (95%) | 5,7563  | 1,3131  | 5,8891  | 5,6093  | 4,4976  |
+| Lower (95%) | 5,736   |  1,183  |5,557    |5,859    |  4,152  |
+| Estimate    | 5,755   |  1,283  |5,603    |5,885    |4,417    |
+| Upper (95%) | 5,773   |  1,384  |5,649    | 5,911   |  4,682  |
 
 
 |             | omega_1 | omega_2 | omega_3 | omega_4 | omega_5 |
 |-------------|:-------:|:-------:|:-------:|:-------:|:-------:|
-| Lower (95%) | 0,0299  | 0,1823  | 0,0243  | 0,0284  | 0,1003  |
-| Estimate    | 0,0318  | 0,1926  | 0,0272  | 0,0332  | 0,1279  |
-| Upper (95%) | 0,0336  | 0,2029  | 0,0301  | 0,0380  | 0,1555  |
+| Lower (95%) | 0,023   |  0,151  |   0,012 |  0,011  |   0,004 | 
+| Estimate    | 0,030   |  0,199  |   0,031 |  0,023  |   0,137 | 
+| Upper (95%) | 0,037   |  0,247  |   0,051 |  0,035  |   0,269 | 
 
 ## References
 [1] Rueda, C., Rodríguez-Collado, A., Fernández, I., Canedo, C., Ugarte, M. D., & Larriba, Y. (2022). A unique cardiac electrocardiographic 3D model. Toward interpretable AI diagnosis. *IScience, 25*(12).
