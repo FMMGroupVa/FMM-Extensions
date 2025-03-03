@@ -17,6 +17,9 @@ fitMultiFMM <- function(vDataMatrix, timePoints = seqTimes(nrow(vDataMatrix)), n
                         parallelize = TRUE, confidenceLevel = 0.95, plotToFile = F, filename = NA){
   # parallelize and confidenceLevel arguments are unused
   
+  if(is.null(dim(vDataMatrix))){
+    vDataMatrix <- as.matrix(vDataMatrix)
+  }
   nSignals <- ncol(vDataMatrix)
   nObs <- nrow(vDataMatrix)
   if(is.null(colnames(vDataMatrix))){
@@ -199,8 +202,9 @@ optimizeAlphaOmega<-function(vDataMatrix, timePoints, baseGrid, fittedWaves, cur
                       vDataMatrix = residualsMatrix, method = "L-BFGS-B", timePoints = timePoints,
                       lower = c(-2*pi, 0.0001), upper = c(4*pi, omegaMax), weights = errorWeights, 
                       control = list(factr = max(tolerance, sqrt(.Machine$double.eps))))
-  
-  return(nelderMead$par[1:2])
+  alpha = nelderMead$par[1] %% (2*pi)
+  omega = nelderMead$par[2]
+  return(c(alpha, omega))
 }
 
 ## MultiFMM, second step: determine non-common parameters
@@ -222,8 +226,8 @@ optimizeOtherParameters <- function(vData, fixedParams, timePoints = seqTimes(le
   fmmObject<-FMM(
     M = mDeltaGamma[1],
     A = sqrt(delta^2+gamma^2),
-    alpha = alpha,
-    beta = atan2(-gamma, delta),
+    alpha = alpha %% (2*pi),
+    beta = atan2(-gamma, delta) %% (2*pi),
     omega = omega,
     timePoints = timePoints,
     summarizedData = vData,
@@ -258,7 +262,8 @@ recalculateMA<-function(vDatai, timePoints = seqTimes(nObs), paramsPerSignal){
   nObs<-length(vDatai)
   
   ## Extract Params. and calculate cosPhi
-  alpha<-paramsPerSignal$Alpha; beta<-paramsPerSignal$Beta
+  alpha<-paramsPerSignal$Alpha %% (2*pi) 
+  beta<-paramsPerSignal$Beta %% (2*pi)
   omega<-paramsPerSignal$Omega; maxComp<-length(alpha)
   cosPhi<-t(calculateCosPhi(alpha = alpha, beta = beta,
                             omega = omega, timePoints = timePoints))
@@ -338,12 +343,15 @@ confintFMM <- function(vDataMatrix, paramsPerSignal,confidenceLevel = 0.95, comp
     namesomega <- paste0("omega_",compNames)
     fullNames <- c(namesDeltas, namesGammas, namesAlphas, namesomega)
   }
+  # Format (row and column names)
+
   
   CIs <- rbind(lInf, estimatedParameters, lSup)
   colnames(CIs) <- fullNames
   rownames(CIs) <- c(paste0("Lower (", 100*confidenceLevel, "%)"), "Estimate", paste0("Upper (", 100*confidenceLevel, "%)"))
   return(CIs)
 }
+
 
 predictMultiFMM <- function(vDataMatrix, paramsPerSignal, timePoints = seqTimes(nrow(as.matrix(vDataMatrix)))){
   fittedWaves <- list() 
@@ -356,4 +364,3 @@ predictMultiFMM <- function(vDataMatrix, paramsPerSignal, timePoints = seqTimes(
   return(fittedWaves)
 }
 
-               
