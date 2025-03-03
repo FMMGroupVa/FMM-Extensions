@@ -23,7 +23,23 @@ print(paramsPerSignal[[2]]) # Estimated parameters (Lead II)
 
 ################################################################################
 
-# 2. To show channels or a selection of channels use the -plotMultiFMM- function
+# 2. FMM fitted values with -predictMultiFMM- function
+
+# Arguments: 
+#     vDataMatrix - Data matrix of dimension: number observations x number Channels
+#     paramsPerSignal - output of fitMultiFMM function, containing fitted model parameters.
+
+fittedValues <- predictMultiFMM(vDataMatrix = exampleData, paramsPerSignal = paramsPerSignal)
+
+leadIIPrediction <- fittedValues[[2]] # Lead II fitted values
+
+# Plot: Lead II observed data (black) and prediction (red)
+plot(exampleData$II, type = "l")
+lines(leadIIPrediction, type = "l", col = 2)
+
+################################################################################
+
+# 3. To show channels or a selection of channels use the -plotMultiFMM- function
 
 # Arguments: 
 #     vDataMatrix - Data matrix of dimension: number observations x number Channels
@@ -43,10 +59,9 @@ plotMultiFMM(vDataMatrix = exampleData, paramsPerSignal = paramsPerSignal,
 # Component plots
 plotMultiFMM(vDataMatrix = exampleData, paramsPerSignal = paramsPerSignal, 
              nPlotCols = 4, channels = 1:8, components = T)
-
 ################################################################################
 
-# 3. Confidence intervales for FMM parameters
+# 4. Confidence intervales for FMM parameters
 
 # Arguments: 
 #     vDataMatrix - data matrix. Used for the estimate of sigma
