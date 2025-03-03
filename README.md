@@ -27,6 +27,18 @@ If `vDataMatrix` columns are named, the names will be used to label the directio
 #### Return values
 An `R` list with a length equal to the number of channels. Each element of the list is a  $k\times 5$ matrix, containing the estimated FMM parameters, including intercept $M$.
 
+### `predictMultiFMM` function description.
+
+`predictMultiFMM` gives the fitted FMM values from the estimated parameters.
+
+#### Arguments
+
+* `vDataMatrix`: double matrix. Each column corresponds to a channel.
+* `paramsPerSignal`: the output object from `fitMultiFMM`.
+
+#### Return
+An `R` double matrix. Each column contains the fitted values of the corresponding channel (same structure as `vDataMatrix`).
+
 ### `plotMultiFMM` function description.
 
 `plotMultiFMM` generates customized plots for 3DFMM fitting and wave decomposition.
