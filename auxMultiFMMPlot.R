@@ -3,17 +3,17 @@
 #### Plot multiFMM functions ####
 emptyPlotFun<-function() plot(1, type = "n", axes=FALSE, xlab="", ylab="")
 
-plotMultiFMM<-function(vDatai, timePoints = seqTimes(nrow(vDatai)), 
-                       paramsPerSignal, channels = 1:ncol(vDatai), components = F, nPlotCols = 5, 
+plotMultiFMM<-function(vDataMatrix, timePoints = seqTimes(nrow(vDataMatrix)), 
+                       paramsPerSignal, channels = 1:ncol(vDataMatrix), components = F, nPlotCols = 5, 
                        filename=NA, leadNames=1:length(channels), 
-                       path="./", plotToFile=TRUE){
+                       path="./", plotToFile=F){
   
-  vDatai <- vDatai[,channels]
+  vDataMatrix <- vDataMatrix[,channels]
   paramsPerSignal <- paramsPerSignal[channels]
   
-  nObs <- nrow(vDatai)
-  nSignals <- ncol(vDatai)
-  leadNames <- colnames(vDatai)
+  nObs <- nrow(vDataMatrix)
+  nSignals <- ncol(vDataMatrix)
+  leadNames <- colnames(vDataMatrix)
   maxComp <- nrow(paramsPerSignal[[1]])
   nPlotRows = ceiling(nSignals/nPlotCols) # Number of row for fixed columns
   if(plotToFile){
@@ -48,7 +48,7 @@ plotMultiFMM<-function(vDatai, timePoints = seqTimes(nrow(vDatai)),
     
     for (k in 1:(nPlotRows* nPlotCols)) {
       if(k<=nSignals){
-        plotMultiFMM_Comps(vDatai=vDatai[,k], fittedWaves = fittedWaves[[k]],
+        plotMultiFMM_Comps(vDataMatrix=vDataMatrix[,k], fittedWaves = fittedWaves[[k]],
                            paramsPerSignal = paramsPerSignal[[k]],
                            filename=filename, leadName=leadNames[k],
                            plotLegend=FALSE)
@@ -67,7 +67,7 @@ plotMultiFMM<-function(vDatai, timePoints = seqTimes(nrow(vDatai)),
   }else{
     par(mfrow = c(nPlotRows, nPlotCols))
     for (k in 1:nSignals) {
-      plotMultiFMM_Sum(vDatai=vDatai[,k], fittedWaves = fittedWaves[[k]],
+      plotMultiFMM_Sum(vDataMatrix=vDataMatrix[,k], fittedWaves = fittedWaves[[k]],
                        paramsPerSignal = paramsPerSignal[[k]],
                        filename=filename, leadName=leadNames[k])
     }
@@ -77,11 +77,11 @@ plotMultiFMM<-function(vDatai, timePoints = seqTimes(nrow(vDatai)),
   if(plotToFile) dev.off()
 }
 
-plotMultiFMM_Sum<-function(vDatai, fittedWaves, paramsPerSignal, leadName,
+plotMultiFMM_Sum<-function(vDataMatrix, fittedWaves, paramsPerSignal, leadName,
                            filename=NA, path="./", plotToFile=FALSE){
   par(mar = c(2,2,3,1))
   
-  nObs<-length(vDatai)
+  nObs<-length(vDataMatrix)
   assignedCondition<-rep(TRUE,nrow(paramsPerSignal))
   
   assignedResults<-paramsPerSignal[assignedCondition,]
@@ -90,7 +90,7 @@ plotMultiFMM_Sum<-function(vDatai, fittedWaves, paramsPerSignal, leadName,
                                 omega = assignedResults$Omega, length.out = nObs, plot = F)$y
   
   ## Colors definition: color linked to assigned wave
-  totalR2<-sum(assignedResults$Var)
+  totalR2<- 1 - var(as.numeric(vDataMatrix)-as.numeric(assignedWavesSum))/var(as.numeric(vDataMatrix))
   
   if(plotToFile){
     png(filename=paste(path,"/02 Results/Plots/",filename,".png",sep=""),
@@ -101,8 +101,8 @@ plotMultiFMM_Sum<-function(vDatai, fittedWaves, paramsPerSignal, leadName,
   
   assignedWavesSumPlot<-assignedWavesSum
   
-  yLimits<-c(min(assignedWavesSumPlot,vDatai), max(assignedWavesSumPlot,vDatai))
-  plot(1:nObs,vDatai,type="l",ylim=yLimits,cex.main=1.6,
+  yLimits<-c(min(assignedWavesSumPlot,vDataMatrix), max(assignedWavesSumPlot,vDataMatrix))
+  plot(1:nObs,vDataMatrix,type="l",ylim=yLimits,cex.main=1.6,
        main=mainText)
   lines(1:nObs,assignedWavesSumPlot,col=4,lwd=2)
   legend("bottomright",legend=sprintf(totalR2*100, fmt = "R2=%#.1f %%"), col=NA, lty=1,
@@ -112,7 +112,7 @@ plotMultiFMM_Sum<-function(vDatai, fittedWaves, paramsPerSignal, leadName,
   if(plotToFile) dev.off()
 }
 
-plotMultiFMM_Comps<-function(vDatai, fittedWaves, paramsPerSignal,
+plotMultiFMM_Comps<-function(vDataMatrix, fittedWaves, paramsPerSignal,
                              leadName, filename=NA, path="./",
                              plotLegend=TRUE, plotToFile=FALSE){
   par(mar = c(2,2,1,1))
@@ -176,7 +176,7 @@ plotMultiFMM_Comps<-function(vDatai, fittedWaves, paramsPerSignal,
 #### Plot multiFMM functions ####
 emptyPlotFun2<-function() plot(1, type = "n", axes=FALSE, xlab="", ylab="")
 
-plotMultiFMM2<-function(vDatai, fittedWaves, currentBack, paramsPerSignal,
+plotMultiFMM2<-function(vDataMatrix, fittedWaves, currentBack, paramsPerSignal,
                        filename=NA, leadNames=1:length(paramsPerSignal), path="./",
                        plotToFile=TRUE){
   
@@ -220,14 +220,14 @@ plotMultiFMM2<-function(vDatai, fittedWaves, currentBack, paramsPerSignal,
   }
   
   sapply(1:nSignals,function(x)
-    plotMultiFMM_Sum2(vDatai=vDatai[!is.na(vDatai[x,]),x], fittedWaves = fittedWaves[[x]],
+    plotMultiFMM_Sum2(vDataMatrix=vDataMatrix[!is.na(vDataMatrix[x,]),x], fittedWaves = fittedWaves[[x]],
                      paramsPerSignal = paramsPerSignal[[x]], currentBack=currentBack,
                      filename=filename, leadName=leadNames[x]))
   if(addedEmptyPlots!=0) for(i in 1:(addedEmptyPlots/2)) emptyPlotFun()
 
   if(nrow(paramsPerSignal[[1]])>1){
     sapply(1:nSignals,function(y)
-      plotMultiFMM_Comps2(vDatai=vDatai[!is.na(vDatai[y,]),y], fittedWaves = fittedWaves[[y]],
+      plotMultiFMM_Comps2(vDataMatrix=vDataMatrix[!is.na(vDataMatrix[y,]),y], fittedWaves = fittedWaves[[y]],
                          paramsPerSignal = paramsPerSignal[[y]],
                          currentBack=currentBack, filename=filename, leadName=leadNames[y],
                          plotLegend=FALSE))
@@ -247,7 +247,7 @@ plotMultiFMM2<-function(vDatai, fittedWaves, currentBack, paramsPerSignal,
   if(plotToFile) dev.off()
 }
 
-plotMultiFMM_Sum2<-function(vDatai, fittedWaves, paramsPerSignal, currentBack, leadName,
+plotMultiFMM_Sum2<-function(vDataMatrix, fittedWaves, paramsPerSignal, currentBack, leadName,
                            filename=NA, path="./", plotToFile=FALSE){
   par(mar = c(2,2,3,1))
   
@@ -257,7 +257,7 @@ plotMultiFMM_Sum2<-function(vDatai, fittedWaves, paramsPerSignal, currentBack, l
     beatId<-ecgId_beatId[2]
   }
   
-  nObs<-length(vDatai)
+  nObs<-length(vDataMatrix)
   assignedCondition<-rep(TRUE,nrow(paramsPerSignal))
   
   assignedResults<-paramsPerSignal[assignedCondition,]
@@ -277,8 +277,8 @@ plotMultiFMM_Sum2<-function(vDatai, fittedWaves, paramsPerSignal, currentBack, l
   
   assignedWavesSumPlot<-assignedWavesSum
   
-  yLimits<-c(min(assignedWavesSumPlot,vDatai), max(assignedWavesSumPlot,vDatai))
-  plot(1:nObs,vDatai,type="l",ylim=yLimits,cex.main=1.6,
+  yLimits<-c(min(assignedWavesSumPlot,vDataMatrix), max(assignedWavesSumPlot,vDataMatrix))
+  plot(1:nObs,vDataMatrix,type="l",ylim=yLimits,cex.main=1.6,
        main=mainText)
   lines(1:nObs,assignedWavesSumPlot,col=4,lwd=2)
   legend("bottomright",legend=sprintf(totalR2*100, fmt = "R2=%#.1f %%"), col=NA, lty=1,
@@ -288,7 +288,7 @@ plotMultiFMM_Sum2<-function(vDatai, fittedWaves, paramsPerSignal, currentBack, l
   if(plotToFile) dev.off()
 }
 
-plotMultiFMM_Comps2<-function(vDatai, fittedWaves, paramsPerSignal,
+plotMultiFMM_Comps2<-function(vDataMatrix, fittedWaves, paramsPerSignal,
                              currentBack, leadName, filename=NA, path="./",
                              plotLegend=TRUE, plotToFile=FALSE){
   par(mar = c(2,2,1,1))
