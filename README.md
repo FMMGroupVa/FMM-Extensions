@@ -42,13 +42,9 @@ An `R` list with a length equal to the number of channels. Each element of the l
 Plots of the signal predictions and the fitted waves.
 Next figures illustrate 8-channel ECG predicted signal and wave decomposition for the example data `exampleData.csv`.
 
-<p align="center">
-  <img src=https://github.com/user-attachments/assets/bda5b60b-db51-4a31-9241-ef918ebfb05e.jpg width="900" height="700" alt>
-</p>
+![Pred1](https://github.com/user-attachments/assets/19b28277-0812-4bf1-9326-16b0b2c2ff2a)
 
-<p align="center">
-  <img src=https://github.com/user-attachments/assets/d3f7af0c-5dd8-43cc-973a-56969399deeb.jpg width="900" height="700" alt>
-</p>
+![Comps1](https://github.com/user-attachments/assets/f9ade342-4315-4894-b8ef-cefdf0eb03b4)
 
 ### `confintFMM` function description.
 
