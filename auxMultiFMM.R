@@ -294,30 +294,50 @@ confintFMM <- function(vDataMatrix, paramsPerSignal,confidenceLevel = 0.95, comp
   nSignals <- length(paramsPerSignal)
   nBack <- nrow(paramsPerSignal[[1]])
   
-  estimatesArray <- array(0, c(nBack, 5, nSignals))
-  for (k in 1:nSignals){ estimatesArray[,,k] <- as.matrix(paramsPerSignal[[k]][,-6]) }
-  alphasHat <- estimatesArray[,3,1]; omegasHat <- estimatesArray[,5,1]
-  AsHat <- estimatesArray[,2,]; betasHat <- estimatesArray[,4,]
-  deltasHat <- c(AsHat*cos(betasHat)); gammasHat <- c(-AsHat*sin(betasHat))
-  estimatedParameters <- c(deltasHat, gammasHat, alphasHat, omegasHat)
+  if(nSignals > 1){
+    estimatesArray <- array(0, c(nBack, 5, nSignals))
+    for (k in 1:nSignals){ estimatesArray[,,k] <- as.matrix(paramsPerSignal[[k]][,-6]) }
+    alphasHat <- estimatesArray[,3,1]; omegasHat <- estimatesArray[,5,1]
+    AsHat <- estimatesArray[,2,]; betasHat <- estimatesArray[,4,]
+    deltasHat <- c(AsHat*cos(betasHat)); gammasHat <- c(-AsHat*sin(betasHat))
+    estimatedParameters <- c(deltasHat, gammasHat, alphasHat, omegasHat)
+  }else{
+    deltasHat <- paramsPerSignal[[1]]$A*cos(paramsPerSignal[[1]]$Beta)
+    gammasHat <- paramsPerSignal[[1]]$A*sin(paramsPerSignal[[1]]$Beta)
+    estimatedParameters <- c(deltasHat, gammasHat, paramsPerSignal[[1]]$Alpha, paramsPerSignal[[1]]$Omega)
+  }
+
   
   # Sigma estimation
   r2 <- sapply(1:length(paramsPerSignal), function(x) sum(paramsPerSignal[[x]][substr(rownames(paramsPerSignal[[x]]),1,1)!="X",]$Var))
   sigmaHat <- sqrt(sum((1-r2)*apply(vDataMatrix, 2, function(vData){sum((vData - mean(vData))^2)}))/(nSignals*nrow(vDataMatrix) - (1+(1+nSignals)*2*nBack)))
   
   # CIs with F0
-  tF0F0 <- precissionMatrix3DFMMm(estimatesArray, seqTimes(nrow(vDataMatrix)))
+  if(nSignals > 1){
+    tF0F0 <- precissionMatrix3DFMMm(estimatesArray, seqTimes(nrow(vDataMatrix)))
+  }else{
+    tF0F0 <- precissionMatrixFMMm((paramsPerSignal[[1]])$A, paramsPerSignal[[1]]$Alpha, paramsPerSignal[[1]]$Beta, paramsPerSignal[[1]]$Omega, seqTimes(nrow(vDataMatrix)))
+  }
+  
   seHat <- sqrt(diag(sigmaHat^2*solve(tF0F0)))[-1]
   lInf <- estimatedParameters - qnorm(0.5+confidenceLevel/2)*seHat
   lSup <- estimatedParameters + qnorm(0.5+confidenceLevel/2)*seHat
   
-  # Format (row and column names)
-  leadNames <- colnames(vDataMatrix)
-  namesDeltas <- paste0("delta_",rep(compNames, nSignals), "_",rep(leadNames, each = nBack))
-  namesGammas <- paste0("gamma_",rep(compNames, nSignals), "_",rep(leadNames, each = nBack))
-  namesAlphas <- paste0("alpha_",compNames)
-  namesomega <- paste0("omega_",compNames)
-  fullNames <- c(namesDeltas, namesGammas, namesAlphas, namesomega)
+  if(nSignals > 1){
+    leadNames <- colnames(vDataMatrix)
+    namesDeltas <- paste0("delta_",rep(compNames, nSignals), "_",rep(leadNames, each = nBack))
+    namesGammas <- paste0("gamma_",rep(compNames, nSignals), "_",rep(leadNames, each = nBack))
+    namesAlphas <- paste0("alpha_",compNames)
+    namesomega <- paste0("omega_",compNames)
+    fullNames <- c(namesDeltas, namesGammas, namesAlphas, namesomega)
+  }else{
+    leadNames <- colnames(vDataMatrix)
+    namesDeltas <- paste0("delta_",compNames)
+    namesGammas <- paste0("gamma_",compNames)
+    namesAlphas <- paste0("alpha_",compNames)
+    namesomega <- paste0("omega_",compNames)
+    fullNames <- c(namesDeltas, namesGammas, namesAlphas, namesomega)
+  }
   
   CIs <- rbind(lInf, estimatedParameters, lSup)
   colnames(CIs) <- fullNames
