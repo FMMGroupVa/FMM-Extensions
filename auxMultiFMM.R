@@ -324,3 +324,16 @@ confintFMM <- function(vDataMatrix, paramsPerSignal,confidenceLevel = 0.95, comp
   rownames(CIs) <- c(paste0("Lower (", 100*confidenceLevel, "%)"), "Estimate", paste0("Upper (", 100*confidenceLevel, "%)"))
   return(CIs)
 }
+
+predictMultiFMM <- function(vDataMatrix, paramsPerSignal, timePoints = seqTimes(nrow(as.matrix(vDataMatrix)))){
+  fittedWaves <- list() 
+  for(k in 1:length(paramsPerSignal)){
+    fittedWaves[[k]] <- generateFMM(M = paramsPerSignal[[k]]$M[1], A = paramsPerSignal[[k]]$A,
+                                    alpha = paramsPerSignal[[k]]$Alpha, beta = paramsPerSignal[[k]]$Beta,
+                                    omega = paramsPerSignal[[k]]$Omega, length.out = length(timePoints), plot = F)$y
+  }
+  if(!is.null(names(paramsPerSignal))) names(fittedWaves) <- names(names(paramsPerSignal))
+  return(fittedWaves)
+}
+
+               
