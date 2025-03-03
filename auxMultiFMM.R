@@ -121,8 +121,11 @@ fitMultiFMM <- function(vDataMatrix, timePoints = seqTimes(nrow(vDataMatrix)), n
   for(i in 1:nSignals) rownames(paramsPerWave[[i]])<-1:nBack
   if (!is.null(cl)) stopCluster(cl)
   
+  names(paramsPerWave) <- colnames(vDataMatrix)
+  paramsPerWave2 <- lapply(paramsPerWave, function(x){x[,colnames(x) != "Var"]})
+  names(paramsPerWave2) <- names(paramsPerWave)
   #### Return results ####
-  return(paramsPerWave)
+  return(paramsPerWave2)
 }
 
 #### Internal multiFMM functions ####
@@ -286,7 +289,7 @@ recalculateMA<-function(vDatai, timePoints = seqTimes(nObs), paramsPerSignal){
   return(paramsPerSignal)
 }
 
-confintFMM <- function(paramsPerSignal, mData, confidenceLevel = 0.95, compNames = 1:nrow(paramsPerSignal[[1]])){
+confintFMM <- function(vDataMatrix, paramsPerSignal,confidenceLevel = 0.95, compNames = 1:nrow(paramsPerSignal[[1]])){
   
   nSignals <- length(paramsPerSignal)
   nBack <- nrow(paramsPerSignal[[1]])
@@ -300,16 +303,16 @@ confintFMM <- function(paramsPerSignal, mData, confidenceLevel = 0.95, compNames
   
   # Sigma estimation
   r2 <- sapply(1:length(paramsPerSignal), function(x) sum(paramsPerSignal[[x]][substr(rownames(paramsPerSignal[[x]]),1,1)!="X",]$Var))
-  sigmaHat <- sqrt(sum((1-r2)*apply(mData, 2, function(vData){sum((vData - mean(vData))^2)}))/(nSignals*nrow(mData) - (1+(1+nSignals)*2*nBack)))
+  sigmaHat <- sqrt(sum((1-r2)*apply(vDataMatrix, 2, function(vData){sum((vData - mean(vData))^2)}))/(nSignals*nrow(vDataMatrix) - (1+(1+nSignals)*2*nBack)))
   
   # CIs with F0
-  tF0F0 <- precissionMatrix3DFMMm(estimatesArray, seqTimes(nrow(mData)))
+  tF0F0 <- precissionMatrix3DFMMm(estimatesArray, seqTimes(nrow(vDataMatrix)))
   seHat <- sqrt(diag(sigmaHat^2*solve(tF0F0)))[-1]
   lInf <- estimatedParameters - qnorm(0.5+confidenceLevel/2)*seHat
   lSup <- estimatedParameters + qnorm(0.5+confidenceLevel/2)*seHat
   
   # Format (row and column names)
-  leadNames <- colnames(mData)
+  leadNames <- colnames(vDataMatrix)
   namesDeltas <- paste0("delta_",rep(compNames, nSignals), "_",rep(leadNames, each = nBack))
   namesGammas <- paste0("gamma_",rep(compNames, nSignals), "_",rep(leadNames, each = nBack))
   namesAlphas <- paste0("alpha_",compNames)
