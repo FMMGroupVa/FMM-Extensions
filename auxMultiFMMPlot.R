@@ -1,14 +1,14 @@
 
-
 #### Plot multiFMM functions ####
 emptyPlotFun<-function() plot(1, type = "n", axes=FALSE, xlab="", ylab="")
 
 plotMultiFMM<-function(vDataMatrix, timePoints = seqTimes(nrow(vDataMatrix)), 
-                       paramsPerSignal, channels = 1:ncol(vDataMatrix), components = F, nPlotCols = 5, 
+                       paramsPerSignal, channels = 1:ncol(as.matrix(vDataMatrix)), 
+                       components = F, nPlotCols = min(5, ncol(as.matrix(vDataMatrix))),
                        filename=NA, leadNames=1:length(channels), 
                        path="./", plotToFile=F){
   
-  vDataMatrix <- vDataMatrix[,channels]
+  vDataMatrix <- as.matrix(vDataMatrix[,channels])
   paramsPerSignal <- paramsPerSignal[channels]
   
   nObs <- nrow(vDataMatrix)
@@ -29,7 +29,6 @@ plotMultiFMM<-function(vDataMatrix, timePoints = seqTimes(nrow(vDataMatrix)),
   }
   
   fittedWaves <- list() # Calcularlas
-  
   for(s in 1:nSignals){
     
     fittedWaves[[s]] <- matrix(0, nrow = nObs, ncol = maxComp)
@@ -38,7 +37,6 @@ plotMultiFMM<-function(vDataMatrix, timePoints = seqTimes(nrow(vDataMatrix)),
       fittedWaves[[s]][,k] <- pars[2]*cos(pars[4] + 2*atan(pars[5]*tan((timePoints-pars[3])/2)))
     }
   }
-  
   #predictedSignals <-  lapply(fittedWaves, function(x){apply(x, 2, sum)})
   
   if(components){
