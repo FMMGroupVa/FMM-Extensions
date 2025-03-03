@@ -1,6 +1,6 @@
 
 # IMPORTANT: set the working directory to this file location 
-# setwd("---/FMMInferences-main")
+# setwd("---/FMM-Extensions-main")
 
 # Libraries for source code reading
 source("auxMultiFMM.R") # Codes for 3DFMM estimation + CIs
@@ -13,46 +13,50 @@ exampleData <- read.csv("exampleData.csv")
 # 1. Estimation of the parameters with -fitMultiFMM- function.
 
 # Arguments: 
-#     vDataMatrix - Data matrix of dimenstion num observations x num Channels
-#     nBack - Number of waves 
-#     maxIter - Number of iterations in the backfitting algorithm. To ensure the
-#               convergence, a high number of iterations are needed.
-#     showPredeterminedPlot - Plot with prediction + waves 
+#     vDataMatrix - double matrix. Each column corresponds to a channel.
+#     nBack - Number of FMM components to be fitted
+#     maxIter - Maximum number of iterations for the backfitting estimation algorithm.
 
-paramsPerSignal <- fitMultiFMM(vDataMatrix = exampleData, nBack = 5, maxIter = 10,
-                               plotToFile = F, showPredeterminedPlot = T)
-
-################################################################################
-
-# 2. Confidence intervales for FMM parameters
-
-# Arguments: 
-#     paramsPerSignal - output of fitMultiFMM function
-#     mData - data matrix fitted. Used for the estimate of sigma
-#     confidenceLevel - confidence level for the CIs
-
-CIs <- confintFMM(paramsPerSignal = paramsPerSignal, mData = exampleData,
-                  confidenceLevel = 0.95)
+paramsPerSignal <- fitMultiFMM(vDataMatrix = exampleData, nBack = 5, maxIter = 5)
 
 print(paramsPerSignal[[2]]) # Estimated parameters (Lead II)
-print(round(CIs[,81:90],3)) # CIs for alphas and omegas
 
 ################################################################################
 
-# 3. To show a selection of channels use the function plotMultiFMM(...)
+# 2. To show channels or a selection of channels use the -plotMultiFMM- function
 
-FMM3D_output <- fitMultiFMM(vDataMatrix = exampleData, nBack = 5, maxIter = 10,
-                            plotToFile = F, showPredeterminedPlot = F) # Do not show predetermined plot
+# Arguments: 
+#     vDataMatrix - Data matrix of dimension: number observations x number Channels
+#     paramsPerSignal - output of fitMultiFMM function, containing fitted model parameters.
+#     nPlotCols - number of columns in the grid layout for plotting.
+#     channels - indices of the selected channels to be plotted.
+#     components - (F) to plot the predicted signal or (T) individual components of the fitted signal
+
 
 # User must give data matrix, parameters output, and specify what channels 
 # are required and how to plot them:
 
 # Fitted signal plots
-plotMultiFMM(vData = exampleData, paramsPerSignal = FMM3D_output, 
-             plotToFile = F, nPlotCols = 3, channels = 1:6)
+plotMultiFMM(vDataMatrix = exampleData, paramsPerSignal = paramsPerSignal, 
+             nPlotCols = 4, channels = 1:8, components = F)
 
 # Component plots
-plotMultiFMM(vData = exampleData, paramsPerSignal = FMM3D_output, 
-             plotToFile = F, nPlotCols = 3, channels = 1:6, components = T)
+plotMultiFMM(vDataMatrix = exampleData, paramsPerSignal = paramsPerSignal, 
+             nPlotCols = 4, channels = 1:8, components = T)
 
+################################################################################
+
+# 3. Confidence intervales for FMM parameters
+
+# Arguments: 
+#     vDataMatrix - data matrix. Used for the estimate of sigma
+#     paramsPerSignal - output of fitMultiFMM function
+#     confidenceLevel - confidence level for the CIs
+
+CIs <- confintFMM(vDataMatrix = exampleData, paramsPerSignal = paramsPerSignal,
+                  confidenceLevel = 0.95)
+
+print(round(CIs[,81:90],3)) # CIs for alphas and omegas
+
+################################################################################
 
