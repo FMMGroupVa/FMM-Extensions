@@ -43,7 +43,11 @@ Plots of the signal predictions and the fitted waves.
 Next figures illustrate 8-channel ECG predicted signal and wave decomposition for the example data `exampleData.csv`.
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/117477025/215553083-31e7b77b-7d87-479f-a305-4445fadae784.jpg" width="900" height="700" alt>
+  <img src=https://github.com/user-attachments/assets/bda5b60b-db51-4a31-9241-ef918ebfb05e.jpg width="900" height="700" alt>
+</p>
+
+<p align="center">
+  <img src=https://github.com/user-attachments/assets/d3f7af0c-5dd8-43cc-973a-56969399deeb.jpg width="900" height="700" alt>
 </p>
 
 ### `confintFMM` function description.
