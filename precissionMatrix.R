@@ -36,7 +36,7 @@ precissionMatrix3DFMMm <- function(paramArrayArg, t){
     blockAlphas <- rbind(blockAlphas, sapply(1:m, function(x){(omegas[x] + (1 - omegas[x]^2)*(1-v[,x])/(2*omegas[x]))*(deltas[x, i]*u[,x] - gammas[x, i]*v[,x])}))
   }
   
-  blockOmegas <- sapply(1:m, function(x){u[,x]*(-deltas[x, i]*u[,x] + gammas[x, i]*v[,x])/omegas[x]})
+  blockOmegas <- sapply(1:m, function(x){u[,x]*(-deltas[x, 1]*u[,x] + gammas[x, 1]*v[,x])/omegas[x]})
   for (i in 1:(d-1)) {
     blockOmegas <- rbind(blockOmegas, sapply(1:m, function(x){u[,x]*(-deltas[x, i]*u[,x] + gammas[x, i]*v[,x])/omegas[x]}))
   }
