@@ -115,7 +115,7 @@ fitMultiFMM <- function(vDataMatrix, timePoints = seqTimes(nrow(vDataMatrix)), n
   }
   
   if(showPredeterminedPlot){
-    plotMultiFMM2(vDatai = vDataMatrix, fittedWaves = fittedWaves, currentBack = currentBack,
+    plotMultiFMM2(vDataMatrix = vDataMatrix, fittedWaves = fittedWaves, currentBack = currentBack,
                   leadNames = colnames(vDataMatrix), paramsPerSignal = paramsPerWave,
                   plotToFile = plotToFile, filename = filename)
   }
@@ -125,10 +125,10 @@ fitMultiFMM <- function(vDataMatrix, timePoints = seqTimes(nrow(vDataMatrix)), n
   if (!is.null(cl)) stopCluster(cl)
   
   names(paramsPerWave) <- colnames(vDataMatrix)
-  paramsPerWave2 <- lapply(paramsPerWave, function(x){x[,colnames(x) != "Var"]})
-  names(paramsPerWave2) <- names(paramsPerWave)
+  # paramsPerWave2 <- lapply(paramsPerWave, function(x){x[,colnames(x) != "Var"]})
+  # names(paramsPerWave2) <- names(paramsPerWave)
   #### Return results ####
-  return(paramsPerWave2)
+  return(paramsPerWave)
 }
 
 #### Internal multiFMM functions ####
@@ -363,4 +363,5 @@ predictMultiFMM <- function(vDataMatrix, paramsPerSignal, timePoints = seqTimes(
   if(!is.null(names(paramsPerSignal))) names(fittedWaves) <- names(names(paramsPerSignal))
   return(fittedWaves)
 }
+
 
